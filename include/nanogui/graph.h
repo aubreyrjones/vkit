@@ -11,7 +11,8 @@
 
 #pragma once
 
-#include "widget.h"
+#include <nanogui/widget.h>
+#include <vector>
 
 NAMESPACE_BEGIN(nanogui)
 
@@ -37,16 +38,16 @@ public:
     const Color &textColor() const { return mTextColor; }
     void setTextColor(const Color &textColor) { mTextColor = textColor; }
 
-    const VectorXf &values() const { return mValues; }
-    VectorXf &values() { return mValues; }
-    void setValues(const VectorXf &values) { mValues = values; }
+    const std::vector<float> &values() const { return mValues; }
+    std::vector<float> &values() { return mValues; }
+    void setValues(const std::vector<float> &values) { mValues = values; }
 
     virtual Vector2i preferredSize(NVGcontext *ctx) const;
     virtual void draw(NVGcontext *ctx);
 protected:
     std::string mCaption, mHeader, mFooter;
     Color mBackgroundColor, mForegroundColor, mTextColor;
-    VectorXf mValues;
+    std::vector<float> mValues;
 };
 
 NAMESPACE_END(nanogui)

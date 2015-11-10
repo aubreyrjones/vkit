@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "common.h"
-#include "object.h"
+#include <nanogui/common.h>
+#include <nanogui/object.h>
 
 NAMESPACE_BEGIN(nanogui)
 

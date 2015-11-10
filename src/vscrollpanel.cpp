@@ -34,7 +34,7 @@ void VScrollPanel::performLayout(NVGcontext *ctx) {
 		return;
 
 	ref<Widget> child = mChildren[0];
-	mChildPreferredHeight = child->preferredSize(ctx).y();
+	mChildPreferredHeight = child->preferredSize(ctx).y;
 	child->setPosition(Vector2i(0, 0));
 
 	child->setSize(child->preferredSize(ctx));
@@ -50,7 +50,7 @@ bool VScrollPanel::mouseDragEvent(const Vector2i &, const Vector2i &rel, int, in
 					std::min(1.0f, height() / (float) mChildPreferredHeight);
 
 	mScroll = std::max((float) 0.0f, std::min((float) 1.0f,
-											  mScroll + rel.y() / (float) (mSize.y() - 8 - scrollh)));
+											  mScroll + rel.y / (float) (mSize.y - 8 - scrollh)));
 	if (scrollCallback) {
 		scrollCallback();
 	}
@@ -59,11 +59,11 @@ bool VScrollPanel::mouseDragEvent(const Vector2i &, const Vector2i &rel, int, in
 }
 
 bool VScrollPanel::scrollEvent(const Vector2i &/* p */, const Vector2f &rel) {
-	float scrollAmount = rel.y() * (mSize.y() / 20.0f);
+	float scrollAmount = rel.y * (mSize.y / 20.0f);
 	float scrollh = height() * std::min(1.0f, height() / (float) mChildPreferredHeight);
 
 	mScroll = std::max((float) 0.0f, std::min((float) 1.0f,
-											  mScroll - scrollAmount / (float) (mSize.y() - 8 - scrollh)));
+											  mScroll - scrollAmount / (float) (mSize.y - 8 - scrollh)));
 
 	if (scrollCallback) {
 		scrollCallback();
@@ -84,14 +84,14 @@ static constexpr int totalScrollMarginV = scrollTopMargin + scrollButtomMargin;
 
 Vector2i VScrollPanel::preferredSize(NVGcontext *ctx) {
 	if (mChildren.empty())
-		return Vector2i::Zero();
+		return Vector2i(0);
 
 	ref<Widget>  child = mChildren[0];
 
 	Vector2i preferredSize = child->preferredSize(ctx) + Vector2i(totalScrollWidth, 0);
 
-	if (preferredSize.y() > maxHeight) {
-		preferredSize.y() = maxHeight;
+	if (preferredSize.y > maxHeight) {
+		preferredSize.y = maxHeight;
 	}
 
 	return preferredSize;
@@ -101,28 +101,28 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 	if (mChildren.empty())
 		return;
 	ref<Widget> child = mChildren[0];
-	mChildPreferredHeight = child->preferredSize(ctx).y();
+	mChildPreferredHeight = child->preferredSize(ctx).y;
 	float scrollh = height() *
 					std::min(1.0f, height() / (float) mChildPreferredHeight);
-	child->setPosition(Vector2i(0, -mScroll * (mChildPreferredHeight - mSize.y())));
+	child->setPosition(Vector2i(0, -mScroll * (mChildPreferredHeight - mSize.y)));
 
 	nvgSave(ctx);
-	nvgTranslate(ctx, mPos.x(), mPos.y());
+	nvgTranslate(ctx, mPos.x, mPos.y);
 
 	nvgSave(ctx);
-	nvgScissor(ctx, 0, 0, mSize.x() - scrollThumbWidth, mSize.y());
+	nvgScissor(ctx, 0, 0, mSize.x - scrollThumbWidth, mSize.y);
 	if (child->visible())
 		child->draw(ctx);
 	nvgRestore(ctx);
 
 	// draw the scroll tab
-	float scrollXPos = mSize.x() - totalScrollWidth + leftScrollMargin;
+	float scrollXPos = mSize.x - totalScrollWidth + leftScrollMargin;
 
 	NVGpaint paint = nvgBoxGradient(ctx,
 									scrollXPos + 1,
 									scrollTopMargin + 1,
 									scrollThumbWidth - rightScrollMargin,
-									mSize.y() - totalScrollMarginV,
+									mSize.y - totalScrollMarginV,
 									3,
 									4,
 									Color(0, 32),
@@ -132,14 +132,14 @@ void VScrollPanel::draw(NVGcontext *ctx) {
 				   scrollXPos,
 				   4,
 				   scrollThumbWidth,
-				   mSize.y() - 8,
+				   mSize.y - 8,
 				   3);
 	nvgFillPaint(ctx, paint);
 	nvgFill(ctx);
 
 	// these casts right here are why Eigen makes a bad small vector library
-	float thumbStart = std::max(0.0f + scrollTopMargin, (float) (4 + 1 + (mSize.y() - 8 - scrollh) * mScroll));
-	float thumbHeight = std::min(scrollh - 2, (float) mSize.y() - totalScrollMarginV);
+	float thumbStart = std::max(0.0f + scrollTopMargin, (float) (4 + 1 + (mSize.y - 8 - scrollh) * mScroll));
+	float thumbHeight = std::min(scrollh - 2, (float) mSize.y - totalScrollMarginV);
 
 	paint = nvgBoxGradient(ctx,
 						   scrollXPos - 1,

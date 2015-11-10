@@ -52,7 +52,7 @@ void PopupButton::draw(NVGcontext* ctx) {
         mPushed = false;
 
 	ref<const Window> parentWindow = window();
-	Vector2i anchor = Vector2i(parentWindow->width() + 15, absolutePosition().y() - parentWindow->position().y() + mSize.y() / 2);
+	Vector2i anchor = Vector2i(parentWindow->width() + 15, absolutePosition().y - parentWindow->position().y + mSize.y / 2);
 	mPopup->setAnchorPos(anchor);
 
     Button::draw(ctx);
@@ -60,7 +60,7 @@ void PopupButton::draw(NVGcontext* ctx) {
     if (mChevronIcon) {
         auto icon = utf8(mChevronIcon);
         NVGcolor textColor =
-            mTextColor.w() == 0 ? mTheme->mTextColor : mTextColor;
+            mTextColor.w == 0 ? mTheme->mTextColor : mTextColor;
 
         nvgFontSize(ctx, (mFontSize < 0 ? mTheme->mButtonFontSize : mFontSize));
         nvgFontFace(ctx, "fa");
@@ -68,10 +68,10 @@ void PopupButton::draw(NVGcontext* ctx) {
         nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
 
         float iw = nvgTextBounds(ctx, 0, 0, icon.data(), nullptr, nullptr);
-        Vector2f iconPos(mPos.x() + mSize.x() - iw - 8,
-                         mPos.y() + mSize.y() * 0.5f);
+        Vector2f iconPos(mPos.x + mSize.x - iw - 8,
+                         mPos.y + mSize.y * 0.5f);
 
-        nvgText(ctx, iconPos.x(), iconPos.y(), icon.data(), nullptr);
+        nvgText(ctx, iconPos.x, iconPos.y, icon.data(), nullptr);
     }
 }
 

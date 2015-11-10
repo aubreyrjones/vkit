@@ -20,17 +20,17 @@ void Divider::draw(NVGcontext *ctx) {
 //	drawBounds(ctx);
 
 	nvgSave(ctx);
-	nvgTranslate(ctx, mPos.x(), mPos.y());
+	nvgTranslate(ctx, mPos.x, mPos.y);
 
-	Vector2f lineStart = Vector2f::Zero(), lineEnd(mSize.x(), mSize.y());
+	Vector2f lineStart = Vector2f(0), lineEnd(mSize.x, mSize.y);
 
 	int freeAxis = mOrientation == Orientation::Horizontal ? 1 : 0;
 
 	lineStart[freeAxis] = lineEnd[freeAxis] = (mSize[freeAxis] / 2.0f) - (mLineWidth / 2.0f);
 
 	nvgBeginPath(ctx);
-	nvgMoveTo(ctx, lineStart.x(), lineStart.y());
-	nvgLineTo(ctx, lineEnd.x(), lineEnd.y());
+	nvgMoveTo(ctx, lineStart.x, lineStart.y);
+	nvgLineTo(ctx, lineEnd.x, lineEnd.y);
 
 	nvgStrokeColor(ctx, mTheme->mDividerColor);
 	nvgStrokeWidth(ctx, mLineWidth);

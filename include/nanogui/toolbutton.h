@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "button.h"
+#include <nanogui/button.h>
 
 NAMESPACE_BEGIN(nanogui)
 

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "common.h"
+#include <nanogui/common.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -21,7 +21,7 @@
 NAMESPACE_BEGIN(nanogui)
 
 inline Color::operator const NVGcolor &() const {
-    return reinterpret_cast<const NVGcolor &>(*this->data());
+    return *reinterpret_cast<const NVGcolor *>(&this->x);
 }
 
 /// Determine whether an icon ID is a texture loaded via nvgImageIcon

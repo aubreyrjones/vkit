@@ -1,0 +1,9 @@
+[submodule "ext/glm"]
+	path = ext/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "ext/nanovg"]
+	path = ext/nanovg
+	url = https://github.com/memononen/nanovg.git
+[submodule "ext/glfw"]
+	path = ext/glfw
+	url = https://github.com/glfw/glfw.git

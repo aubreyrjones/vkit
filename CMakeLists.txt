@@ -1,15 +1,22 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 2.8.12)
 project(vkit)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories(include)
+include_directories(include ext/glm ext/nanovg/src ext/glfw/include ${CMAKE_BINARY_DIR})
+
+# disable all the tests, examples, and extraneous options
+
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "build glfw examples")
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "build glfw docs")
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "build glfw tests")
+add_subdirectory(ext/glfw)
+
+set(NANOVG_SOURCE_FILES ext/nanovg/src/nanovg.c)
 
 set(SOURCE_FILES
     include/nanogui/button.h
     include/nanogui/checkbox.h
-    include/nanogui/colorpicker.h
-    include/nanogui/colorwheel.h
     include/nanogui/combobox.h
     include/nanogui/common.h
     include/nanogui/divider.h
@@ -39,8 +46,6 @@ set(SOURCE_FILES
     include/nanogui/window.h
     src/button.cpp
     src/checkbox.cpp
-    src/colorpicker.cpp
-    src/colorwheel.cpp
     src/combobox.cpp
     src/common.cpp
     src/divider.cpp
@@ -60,15 +65,19 @@ set(SOURCE_FILES
     src/theme.cpp
     src/vscrollpanel.cpp
     src/widget.cpp
-    src/window.cpp)
+    src/window.cpp
+
+    "${CMAKE_BINARY_DIR}/resources.cpp")
 
 set(RESOURCE_FILES resources/entypo.ttf resources/fontawesome.ttf resources/Roboto-Bold.ttf resources/Roboto-Regular.ttf)
 
-add_custom_command(OUTPUT "assets.h" "assets.cpp"
-        COMMAND "python" ARGS ${CMAKE_SOURCE_DIR}/resc "--ns" "_r" "--outdir" ${CMAKE_BINARY_DIR} "assets" ${RESOURCE_FILES}
+add_custom_command(OUTPUT "resources.h" "resources.cpp"
+        COMMAND "python" ARGS ${CMAKE_SOURCE_DIR}/resc "--ns" "_r" "--outdir" ${CMAKE_BINARY_DIR} "resources" ${RESOURCE_FILES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         DEPENDS ${CMAKE_SOURCE_DIR}/resc ${RESOURCE_FILES}
         VERBATIM)
 
 
-add_library(vkit STATIC "${CMAKE_BINARY_DIR}/assets.cpp" ${SOURCE_FILES} )
+
+add_library(vkit STATIC ext/glad.c ${SOURCE_FILES} ${NANOVG_SOURCE_FILES})
+target_link_libraries(glfw)

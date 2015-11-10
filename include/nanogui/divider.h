@@ -3,8 +3,8 @@
 //
 
 
-#include "widget.h"
-#include "layout.h"
+#include <nanogui/widget.h>
+#include <nanogui/layout.h>
 
 
 #ifndef OMNIBUILD_DIVIDER_H

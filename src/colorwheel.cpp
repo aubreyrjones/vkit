@@ -14,6 +14,7 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#include <Eigen/Core>
 #include <Eigen/QR>
 #include <Eigen/Geometry>
 
@@ -34,10 +35,10 @@ void ColorWheel::draw(NVGcontext *ctx) {
     if (!mVisible)
         return;
 
-    float x = mPos.x(),
-          y = mPos.y(),
-          w = mSize.x(),
-          h = mSize.y();
+    float x = mPos.x,
+          y = mPos.y,
+          w = mSize.x,
+          h = mSize.y;
 
     NVGcontext* vg = ctx;
 
@@ -160,10 +161,10 @@ bool ColorWheel::mouseDragEvent(const Vector2i &p, const Vector2i &,
 }
 
 ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consideredRegions) {
-    float x = p.x() - mPos.x(),
-          y = p.y() - mPos.y(),
-          w = mSize.x(),
-          h = mSize.y();
+    float x = p.x - mPos.x,
+          y = p.y - mPos.y,
+          w = mSize.x,
+          h = mSize.y;
 
     float cx = w*0.5f;
     float cy = h*0.5f;
@@ -209,7 +210,7 @@ ColorWheel::Region ColorWheel::adjustPosition(const Vector2i &p, Region consider
          triangle(1,0) - triangle(1,2), triangle(1,1) - triangle(1,2);
     Vector2f pos { x - triangle(0,2), y - triangle(1,2) };
 
-    Vector2f bary = T.colPivHouseholderQr().solve(pos);
+	Eigen::Vector2f bary = T.colPivHouseholderQr().solve(Eigen::Map<Eigen::Vector2f>(glm::value_ptr(pos)));
     float l0 = bary[0], l1 = bary[1], l2 = 1 - l0 - l1;
     bool triangleTest = l0 >= 0 && l0 <= 1.f && l1 >= 0.f && l1 <= 1.f &&
                         l2 >= 0.f && l2 <= 1.f;
@@ -290,13 +291,14 @@ void ColorWheel::setColor(const Color &rgb) {
         mHue = h;
 
         Eigen::Matrix<float, 4, 3> M;
-        M.topLeftCorner<3, 1>() = hue2rgb(h).head<3>();
+		auto c = hue2rgb(h).rgb().rgb();
+        M.topLeftCorner<3, 1>() = Eigen::Map<Eigen::Vector3f>(glm::value_ptr(c));
         M(3, 0) = 1.;
-        M.col(1) = Vector4f{ 0., 0., 0., 1. };
-        M.col(2) = Vector4f{ 1., 1., 1., 1. };
+        M.col(1) = Eigen::Vector4f{ 0., 0., 0., 1. };
+        M.col(2) = Eigen::Vector4f{ 1., 1., 1., 1. };
 
-        Vector4f rgb4{ rgb[0], rgb[1], rgb[2], 1. };
-        Vector3f bary = M.colPivHouseholderQr().solve(rgb4);
+		Eigen::Vector4f rgb4{ rgb[0], rgb[1], rgb[2], 1. };
+		Eigen::Vector3f bary = M.colPivHouseholderQr().solve(rgb4);
 
         mBlack = bary[1];
         mWhite = bary[2];

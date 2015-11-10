@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "object.h"
+#include <nanogui/object.h>
 #include <unordered_map>
 
 NAMESPACE_BEGIN(nanogui)
@@ -142,7 +142,7 @@ public:
                int margin = 0, int spacing = 0)
         : mOrientation(orientation), mResolution(resolution), mMargin(margin) {
         mDefaultAlignment[0] = mDefaultAlignment[1] = alignment;
-        mSpacing = Vector2i::Constant(spacing);
+        mSpacing = Vector2i(spacing);
     }
 
     Orientation orientation() const { return mOrientation; }

@@ -18,7 +18,7 @@ NAMESPACE_BEGIN(nanogui)
     
 Popup::Popup(ref<Widget> parent, ref<Window> parentWindow)
     : Window(parent, ""), mParentWindow(parentWindow),
-      mAnchorPos(Vector2i::Zero()), mAnchorHeight(30) {
+      mAnchorPos(Vector2i(0)), mAnchorHeight(30) {
 }
 
 void Popup::associate() {
@@ -34,7 +34,7 @@ void Popup::performLayout(NVGcontext *ctx) {
     if (mLayout || mChildren.size() != 1) {
         Widget::performLayout(ctx);
     } else {
-        mChildren[0]->setPosition(Vector2i::Zero());
+        mChildren[0]->setPosition(Vector2i(0));
         mChildren[0]->setSize(mSize);
         mChildren[0]->performLayout(ctx);
     }
@@ -73,23 +73,23 @@ void Popup::draw(NVGcontext* ctx) {
 
     /* Draw a drop shadow */
     NVGpaint shadowPaint = nvgBoxGradient(
-        ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
+        ctx, mPos.x, mPos.y, mSize.x, mSize.y, cr*2, ds*2,
         mTheme->mDropShadow, mTheme->mTransparent);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+    nvgRect(ctx, mPos.x-ds,mPos.y-ds, mSize.x+2*ds, mSize.y+2*ds);
+    nvgRoundedRect(ctx, mPos.x, mPos.y, mSize.x, mSize.y, cr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, shadowPaint);
     nvgFill(ctx);
 
     /* Draw window */
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+    nvgRoundedRect(ctx, mPos.x, mPos.y, mSize.x, mSize.y, cr);
 
-    nvgMoveTo(ctx, mPos.x()-15,mPos.y()+mAnchorHeight);
-    nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight-15);
-    nvgLineTo(ctx, mPos.x()+1,mPos.y()+mAnchorHeight+15);
+    nvgMoveTo(ctx, mPos.x-15,mPos.y+mAnchorHeight);
+    nvgLineTo(ctx, mPos.x+1,mPos.y+mAnchorHeight-15);
+    nvgLineTo(ctx, mPos.x+1,mPos.y+mAnchorHeight+15);
 
     nvgFillColor(ctx, mTheme->mWindowPopup);
     nvgFill(ctx);

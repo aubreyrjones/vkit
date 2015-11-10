@@ -28,7 +28,7 @@ bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
                             int /* button */, int /* modifiers */) {
     if (!mEnabled)
         return false;
-    mValue = std::min(std::max((p.x() - mPos.x()) / (float) mSize.x(), (float) 0.0f), (float) 1.0f);
+    mValue = std::min(std::max((p.x - mPos.x) / (float) mSize.x, (float) 0.0f), (float) 1.0f);
     if (mCallback)
         mCallback(mValue);
     return true;
@@ -37,7 +37,7 @@ bool Slider::mouseDragEvent(const Vector2i &p, const Vector2i & /* rel */,
 bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, int /* modifiers */) {
     if (!mEnabled)
         return false;
-    mValue = std::min(std::max((p.x() - mPos.x()) / (float) mSize.x(), (float) 0.0f), (float) 1.0f);
+    mValue = std::min(std::max((p.x - mPos.x) / (float) mSize.x, (float) 0.0f), (float) 1.0f);
     if (mCallback)
         mCallback(mValue);
     if (mFinalCallback && !down)
@@ -46,50 +46,50 @@ bool Slider::mouseButtonEvent(const Vector2i &p, int /* button */, bool down, in
 }
 
 void Slider::draw(NVGcontext* ctx) {
-    Vector2f center = mPos.cast<float>() + mSize.cast<float>() * 0.5f;
-    Vector2f knobPos(mPos.x() + mValue * mSize.x(), center.y() + 0.5f);
-    float kr = (int)(mSize.y()*0.5f);
+    Vector2f center = Vector2f(mPos) + Vector2f(mSize) * 0.5f;
+    Vector2f knobPos(mPos.x + mValue * mSize.x, center.y + 0.5f);
+    float kr = (int)(mSize.y*0.5f);
     NVGpaint bg = nvgBoxGradient(ctx,
-        mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 3, 3, Color(0, mEnabled ? 32 : 10), Color(0, mEnabled ? 128 : 210));
+        mPos.x, center.y - 3 + 1, mSize.x, 6, 3, 3, Color(0, mEnabled ? 32 : 10), Color(0, mEnabled ? 128 : 210));
 
     nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x(), center.y() - 3 + 1, mSize.x(), 6, 2);
+    nvgRoundedRect(ctx, mPos.x, center.y - 3 + 1, mSize.x, 6, 2);
     nvgFillPaint(ctx, bg);
     nvgFill(ctx);
 
     if (mHighlightedRange.second != mHighlightedRange.first) {
         nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos.x() + mHighlightedRange.first * mSize.x(), center.y() - 3 + 1, mSize.x() * (mHighlightedRange.second-mHighlightedRange.first), 6, 2);
+        nvgRoundedRect(ctx, mPos.x + mHighlightedRange.first * mSize.x, center.y - 3 + 1, mSize.x * (mHighlightedRange.second-mHighlightedRange.first), 6, 2);
         nvgFillColor(ctx, mHighlightColor);
         nvgFill(ctx);
     }
 
     NVGpaint knobShadow = nvgRadialGradient(ctx,
-        knobPos.x(), knobPos.y(), kr-3, kr+3, Color(0, 64), mTheme->mTransparent);
+        knobPos.x, knobPos.y, kr-3, kr+3, Color(0, 64), mTheme->mTransparent);
 
     nvgBeginPath(ctx);
-    nvgRect(ctx, knobPos.x() - kr - 5, knobPos.y() - kr - 5, kr*2+10, kr*2+10+3);
-    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr);
+    nvgRect(ctx, knobPos.x - kr - 5, knobPos.y - kr - 5, kr*2+10, kr*2+10+3);
+    nvgCircle(ctx, knobPos.x, knobPos.y, kr);
     nvgPathWinding(ctx, NVG_HOLE);
     nvgFillPaint(ctx, knobShadow);
     nvgFill(ctx);
 
     NVGpaint knob = nvgLinearGradient(ctx,
-        mPos.x(), center.y() - kr, mPos.x(), center.y() + kr,
+        mPos.x, center.y - kr, mPos.x, center.y + kr,
         mTheme->mBorderLight, mTheme->mBorderMedium);
     NVGpaint knobReverse = nvgLinearGradient(ctx,
-        mPos.x(), center.y() - kr, mPos.x(), center.y() + kr,
+        mPos.x, center.y - kr, mPos.x, center.y + kr,
         mTheme->mBorderMedium,
         mTheme->mBorderLight);
 
     nvgBeginPath(ctx);
-    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr);
+    nvgCircle(ctx, knobPos.x, knobPos.y, kr);
     nvgStrokeColor(ctx, mTheme->mBorderDark);
     nvgFillPaint(ctx, knob);
     nvgStroke(ctx);
     nvgFill(ctx);
     nvgBeginPath(ctx);
-    nvgCircle(ctx, knobPos.x(), knobPos.y(), kr/2);
+    nvgCircle(ctx, knobPos.x, knobPos.y, kr/2);
     nvgFillColor(ctx, Color(150, mEnabled ? 255 : 100));
     nvgStrokePaint(ctx, knobReverse);
     nvgStroke(ctx);

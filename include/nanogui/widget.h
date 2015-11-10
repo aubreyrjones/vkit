@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "object.h"
+#include <nanogui/object.h>
 #include <vector>
 #include <nanovg.h>
 #include <atomic>
@@ -73,14 +73,14 @@ public:
     void setSize(const Vector2i &size) { mSize = size; }
 
     /// Return the width of the widget
-    int width() const { return mSize.x(); }
+    int width() const { return mSize.x; }
     /// Set the width of the widget
-    void setWidth(int width) { mSize.x() = width; }
+    void setWidth(int width) { mSize.x = width; }
 
     /// Return the height of the widget
-    int height() const { return mSize.y(); }
+    int height() const { return mSize.y; }
     /// Set the height of the widget
-    void setHeight(int height) { mSize.y() = height; }
+    void setHeight(int height) { mSize.y = height; }
 
     /**
      * \brief Set the fixed size of this widget
@@ -97,13 +97,13 @@ public:
     const Vector2i &fixedSize() const { return mFixedSize; }
 
     // Return the fixed width (see \ref setFixedSize())
-    int fixedWidth() const { return mFixedSize.x(); }
+    int fixedWidth() const { return mFixedSize.x; }
     // Return the fixed height (see \ref setFixedSize())
-    int fixedHeight() const { return mFixedSize.y(); }
+    int fixedHeight() const { return mFixedSize.y; }
     /// Set the fixed width (see \ref setFixedSize())
-    void setFixedWidth(int width) { mFixedSize.x() = width; }
+    void setFixedWidth(int width) { mFixedSize.x = width; }
     /// Set the fixed height (see \ref setFixedSize())
-    void setFixedHeight(int height) { mFixedSize.y() = height; }
+    void setFixedHeight(int height) { mFixedSize.y = height; }
 
     /// Return whether or not the widget is currently visible (assuming all parents are visible)
     virtual bool visible() const { return mVisible; }
@@ -179,14 +179,11 @@ public:
 
     /// Check if the widget contains a certain position
     bool contains(const Vector2i &p) const {
-        auto d = (p - mPos).array();
-        return (d >= 0).all() && (d < mSize.array()).all();
-    }
+		auto d = p - mPos;
 
-	bool containsLocal(const Vector2i &p) const {
-		auto d = p.array();
-		return (d >= 0).all() && (d < mSize.array()).all();
-	}
+		return glm::all(glm::greaterThan(d, glm::ivec2(0))) &&
+				glm::all(glm::lessThan(d, mSize));
+    }
 
     /// Determine the widget located at the given position value (recursive)
     ref<Widget> findWidget(const Vector2i &p);

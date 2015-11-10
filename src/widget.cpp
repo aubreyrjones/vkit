@@ -23,8 +23,8 @@ std::atomic<int> Widget::idCounter {0};
 
 Widget::Widget(ref<Widget> parent)
     : nid(idCounter.fetch_add(1)), mParent(), mTheme(nullptr), mLayout(nullptr),
-      mPos(Vector2i::Zero()), mSize(Vector2i::Zero()),
-      mFixedSize(Vector2i::Zero()), mVisible(true), mEnabled(true),
+      mPos(Vector2i(0)), mSize(Vector2i(0)),
+      mFixedSize(Vector2i(0)), mVisible(true), mEnabled(true),
       mFocused(false), mMouseFocus(false), mTooltip(""), mFontSize(-1.0f),
       mCursor(Cursor::Arrow) {
     if (parent) {
@@ -176,7 +176,7 @@ void Widget::requestFocus() {
 void Widget::drawBounds(NVGcontext *ctx, NVGcolor const& c) {
 	nvgStrokeWidth(ctx, 1.0f);
 	nvgBeginPath(ctx);
-	nvgRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y());
+	nvgRect(ctx, mPos.x, mPos.y, mSize.x, mSize.y);
 	nvgStrokeColor(ctx, c);
 	nvgStroke(ctx);
 }
@@ -193,11 +193,11 @@ void Widget::draw(NVGcontext *ctx) {
     if (mChildren.empty())
         return;
 
-    nvgTranslate(ctx, mPos.x(), mPos.y());
+    nvgTranslate(ctx, mPos.x, mPos.y);
     for (auto child : mChildren)
         if (child->visible())
             child->draw(ctx);
-    nvgTranslate(ctx, -mPos.x(), -mPos.y());
+    nvgTranslate(ctx, -mPos.x, -mPos.y);
 }
 
 Vector2i Widget::absolutePosition() const {

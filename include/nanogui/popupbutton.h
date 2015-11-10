@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include "button.h"
-#include "popup.h"
-#include "entypo.h"
-#include "font_awesome.h"
+#include <nanogui/button.h>
+#include <nanogui/popup.h>
+#include <nanogui/entypo.h>
+#include <nanogui/font_awesome.h>
 
 NAMESPACE_BEGIN(nanogui)
 

@@ -9,6 +9,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
+#include <string.h>
+
 #include <nanogui/screen.h>
 #if defined(WIN32)
 #include <windows.h>

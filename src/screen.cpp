@@ -62,7 +62,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         mGLFWWindow = glfwCreateWindow(mode->width, mode->height,
                                        caption.c_str(), monitor, nullptr);
     } else {
-        mGLFWWindow = glfwCreateWindow(size.x(), size.y(), caption.c_str(),
+        mGLFWWindow = glfwCreateWindow(size.x, size.y, caption.c_str(),
                                        nullptr, nullptr);
     }
 
@@ -197,7 +197,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
 
     mVisible = glfwGetWindowAttrib(window, GLFW_VISIBLE) != 0;
     mTheme = makeref<Theme>(mNVGContext);
-    mMousePos = Vector2i::Zero();
+    mMousePos = Vector2i(0);
     mMouseState = mModifiers = 0;
     mDragActive = false;
     mLastInteraction = glfwGetTime();
@@ -242,7 +242,7 @@ void Screen::setCaption(const std::string &caption) {
 
 void Screen::setSize(const Vector2i &size) {
     Widget::setSize(size);
-    glfwSetWindowSize(mGLFWWindow, size.x(), size.y());
+    glfwSetWindowSize(mGLFWWindow, size.x, size.y);
 }
 
 void Screen::drawAll() {
@@ -286,7 +286,7 @@ void Screen::drawWidgets() {
             Vector2i pos = widget->absolutePosition() +
                            Vector2i(widget->width() / 2, widget->height() + 10);
 
-            nvgTextBoxBounds(mNVGContext, pos.x(), pos.y(), tooltipWidth,
+            nvgTextBoxBounds(mNVGContext, pos.x, pos.y, tooltipWidth,
                              widget->tooltip().c_str(), nullptr, bounds);
 
             nvgGlobalAlpha(mNVGContext,
@@ -307,7 +307,7 @@ void Screen::drawWidgets() {
 
             nvgFillColor(mNVGContext, Color(255, 255));
             nvgFontBlur(mNVGContext, 0.0f);
-            nvgTextBox(mNVGContext, pos.x() - h, pos.y(), tooltipWidth,
+            nvgTextBox(mNVGContext, pos.x - h, pos.y, tooltipWidth,
                        widget->tooltip().c_str(), nullptr);
         }
     }
@@ -511,7 +511,7 @@ void Screen::disposeWindow(ref<Window> window) {
 }
 
 void Screen::centerWindow(ref<Window> window) {
-    if (window->size() == Vector2i::Zero()) {
+    if (window->size() == Vector2i(0)) {
         window->setSize(window->preferredSize(mNVGContext));
         window->performLayout(mNVGContext);
     }

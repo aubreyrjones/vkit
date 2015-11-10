@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "common.h"
+#include <nanogui/common.h>
 #include <memory>
 
 NAMESPACE_BEGIN(nanogui)
