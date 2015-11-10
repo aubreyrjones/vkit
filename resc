@@ -1,0 +1,110 @@
+#!/usr/bin/env python
+
+import argparse
+import os.path
+
+header_file = """
+#include <string>
+#include <algorithm>
+#include <cstdint>
+
+namespace {namespace} {{
+
+struct buffer {{
+	uint8_t const* data;     /// data pointer
+	size_t length;    /// number of bytes in this buffer
+	size_t cursor = 0;    /// used for read() emulation
+
+	buffer() : data(nullptr), length(0) {{}}
+	buffer (uint8_t const* d, size_t l) : data(d), length(l) {{}}
+	operator bool() const {{return data && length;}}
+
+	uint8_t const& operator[](size_t i) {{ return data[i]; }}
+	
+	size_t read(uint8_t * buf, size_t count) {{
+	    if (cursor >= length) {{ return 0; }}
+	    
+	    if (cursor + count >= length) count = length - cursor;
+	    
+	    if (count) std::copy(data + cursor, data + cursor + count, buf);
+	    
+	    cursor += count;
+	    return count;
+	}}
+}};
+
+/** Use this function to retrieve resources. */
+buffer r(std::string const& filename);
+
+}}
+
+"""
+
+
+
+buffer_block_start = """
+static uint8_t {file_ptr} [] =
+"""
+
+buffer_block_end = """;
+"""
+
+
+r_func_start = """
+namespace {namespace} {{
+buffer r(std::string const& filename) {{  
+"""
+
+r_func_block = """
+	if (filename == "{filename}") {{
+		return buffer({file_ptr}, {file_length});
+	}}
+"""
+
+r_func_end = """
+	return buffer(nullptr, 0);
+}
+}
+"""
+
+
+args_p = argparse.ArgumentParser(description = "Make compileable resource.")
+args_p.add_argument('--outdir', default="./", type=str, help="Directory to write the .h/.cpp files.")
+args_p.add_argument('--ns', default='res', dest='namespace', type=str, help="Namespace used by resc.")
+args_p.add_argument('output_base', type=str, help="Base for output file names.")
+args_p.add_argument('files', nargs="*", metavar='FILE', type=str, help="File(s) to resourcize")
+args = args_p.parse_args()
+
+header_file_name = os.path.join(args.outdir, args.output_base + ".h")
+source_file = os.path.join(args.outdir, args.output_base + ".cpp")
+
+with open(header_file_name, 'w') as out:
+    out.write(header_file.format(namespace=args.namespace))
+
+file_pointers = []
+file_id = 0
+
+with open(source_file, 'w') as out:
+    out.write('#include "{basename}.h"\n'.format(basename=args.output_base))
+    for filename in args.files:
+        row_len = 25
+        with open(filename, 'r') as f:
+            fp = "_buffer_" + str(file_id)
+            file_id += 1
+            out.write(buffer_block_start.format(file_ptr=fp))
+            filelen = 0
+            while True:
+                row = f.read(row_len)
+                out.write('"' + "".join("\\x{:02x}".format(ord(c)) for c in row) + '"')
+                filelen += len(row)
+                if len(row) < row_len:
+                    break
+                out.write("\n")
+            
+            out.write(buffer_block_end)
+            file_pointers.append( (os.path.basename(filename), fp, filelen) )
+
+    out.write(r_func_start.format(namespace=args.namespace))
+    for fp in file_pointers:
+        out.write(r_func_block.format(filename=fp[0], file_ptr=fp[1], file_length=fp[2]))
+    out.write(r_func_end)
